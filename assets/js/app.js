@@ -30,7 +30,7 @@ $(document).ready(function() {
   //   createTopicButton(topics[i]);
   // }
   $(document).on("click", ".topicBtn", function() {
-    $("#gifZone").empty();
+    // $("#gifZone").empty();
     getGiphy($(this).text());
   });
 });
@@ -77,26 +77,21 @@ function getGiphy(btnText) {
   }).then(function(response) {
     console.log(response);
     for (var i = 0; i < response.data.length; i++) {
-      var giphyRtg = $("<p/>");
+      var giphyRtg = $("<h6/>");
       var lineBreak = $("<br/>");
       giphyRtg.text("Rating:  " + response.data[i].rating);
+      var giphyDiv = $("<div/>");
+      giphyDiv.addClass("iBlock");
       var giphyImg = $("<img/>");
       giphyImg.attr("src", response.data[i].images.original_still.url);
       giphyImg.attr("still", response.data[i].images.original_still.url);
       giphyImg.attr("live", response.data[i].images.original.url);
       giphyImg.attr("alive", "off");
       giphyImg.addClass("loadedImg "); //loadedImg is the class that is needed to animage img.
-      //Display option 1 comment out next line to show gifs how i want but w/o rating
-      //$("#gifZone").append(giphyImg);
-      //Adding rating text caused each to display on its own line.
-      //Adding rating changes the way gifs are displayed.  why?
 
-      //Next two lines change things somewhat but not the way I want.
-      //giphyImg.addClass("loadedImg myFloat");
-      //giphyRtg.addClass("myFloat");
-      $("#gifZone").append(giphyRtg);
-      giphyRtg.append(lineBreak);
-      giphyRtg.append(giphyImg);
+      $("#gifZone").prepend(giphyDiv);
+      $(giphyDiv).append(giphyRtg);
+      $(giphyDiv).append(giphyImg);
     }
   });
 }
