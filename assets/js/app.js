@@ -15,40 +15,28 @@ var topics = [
   "redskins",
   "fishing"
 ];
-var flip;
 
 $(document).ready(function() {
   loadTopics();
   $("#searchButton").on("click", function() {
     var newTopic = $("#newTopic").val();
-    //createTopicButton(newTopic);
     topics.push(newTopic);
     loadTopics();
   });
 
-  // for (var i = 0; i < topics.length; i++) {
-  //   createTopicButton(topics[i]);
-  // }
   $(document).on("click", ".topicBtn", function() {
-    // $("#gifZone").empty();
+    // $("#gifZone").empty(); --Removed this as part of bonus to not overwrite gifs
     getGiphy($(this).text());
   });
 });
 $(document).on("click", ".loadedImg", function() {
-  // toggleImage();
-  var x = $(this).attr("alive");
-
-  console.log(x);
-  if ($(this).attr("alive") === "off") {
-    console.log("alive");
-    $(this).attr("src", $(this).attr("live"));
-    flip = "on";
+  if ($(this).attr("data-alive") === "off") {
+    $(this).attr("src", $(this).attr("data-live"));
+    $(this).attr("data-alive", "on");
   } else {
-    console.log("not alive");
-    $(this).attr("src", $(this).attr("still"));
-    flip = "off";
+    $(this).attr("src", $(this).attr("data-still"));
+    $(this).attr("data-alive", "off");
   }
-  $(this).attr("alive", flip);
 });
 
 function loadTopics() {
@@ -77,21 +65,35 @@ function getGiphy(btnText) {
   }).then(function(response) {
     console.log(response);
     for (var i = 0; i < response.data.length; i++) {
-      var giphyRtg = $("<h6/>");
-      var lineBreak = $("<br/>");
-      giphyRtg.text("Rating:  " + response.data[i].rating);
-      var giphyDiv = $("<div/>");
-      giphyDiv.addClass("iBlock");
-      var giphyImg = $("<img/>");
-      giphyImg.attr("src", response.data[i].images.original_still.url);
-      giphyImg.attr("still", response.data[i].images.original_still.url);
-      giphyImg.attr("live", response.data[i].images.original.url);
-      giphyImg.attr("alive", "off");
-      giphyImg.addClass("loadedImg "); //loadedImg is the class that is needed to animage img.
+      //set response object data values to variables
+      var stillImg = response.data[i].images.original_still.url;
+      var liveImg = response.data[i].images.original.url;
+      var rtng = response.data[i].rating;
+      var imgTitle = response.data[i].title;
 
+      //create and style html elements to be added to page
+      var giphyRtg = $("<h6/>").text("Rating:  " + rtng);
+      var giphyTitle = $("<h6/>").text("Title:  " + imgTitle);
+      var giphyDiv = $("<div/>").addClass("iBlock");
+
+      /*chaining functions:  add class and attr
+      loadedImg is the class referenced in the page on click event to start/stop animation
+      attr setting both standard and user defined attributes */
+      var giphyImg = $("<img/>")
+        .addClass("loadedImg ")
+        .attr({
+          src: stillImg,
+          alt: btnText + " gif",
+          "data-still": stillImg,
+          "data-live": liveImg,
+          "data-alive": "off"
+        });
+
+      //add dynamically created elements to page
       $("#gifZone").prepend(giphyDiv);
       $(giphyDiv).append(giphyRtg);
       $(giphyDiv).append(giphyImg);
+      $(giphyDiv).append(giphyTitle);
     }
   });
 }
